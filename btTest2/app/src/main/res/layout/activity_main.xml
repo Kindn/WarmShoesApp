@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/turn_on_visibility"
+        android:layout_width="88dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="26dp"
+        android:layout_marginTop="40dp"
+        android:onClick="turnOnVisibility"
+        android:text="打开可见"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/search_for_devices"
+        android:layout_width="88dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="40dp"
+        android:onClick="searchForDevices"
+        android:text="寻找设备"
+        app:layout_constraintStart_toEndOf="@+id/turn_on_visibility"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/bonded_devices"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="40dp"
+        android:onClick="showBondedDevices"
+        android:text="已绑定设备"
+        app:layout_constraintStart_toEndOf="@+id/search_for_devices"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ListView
+        android:id="@+id/lv_devices"
+        android:layout_width="364dp"
+        android:layout_height="593dp"
+        android:layout_marginStart="23dp"
+        android:layout_marginTop="18dp"
+        android:visibility="visible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/turn_on_visibility" />
+</androidx.constraintlayout.widget.ConstraintLayout>
