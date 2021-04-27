@@ -41,11 +41,56 @@
 
     <ListView
         android:id="@+id/lv_devices"
-        android:layout_width="364dp"
-        android:layout_height="593dp"
-        android:layout_marginStart="23dp"
-        android:layout_marginTop="18dp"
+        android:layout_width="355dp"
+        android:layout_height="224dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="28dp"
         android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/turn_on_visibility" />
+
+    <EditText
+        android:id="@+id/data_to_be_sent"
+        android:layout_width="0dp"
+        android:layout_height="49dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="33dp"
+        android:layout_marginEnd="28dp"
+        android:layout_marginBottom="315dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lv_devices" />
+
+    <Button
+        android:id="@+id/send_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="158dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="165dp"
+        android:layout_marginBottom="243dp"
+        android:onClick="sendData"
+        android:text="发送"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/data_to_be_sent" />
+
+    <TextView
+        android:id="@+id/recv_msg"
+        android:layout_width="350dp"
+        android:layout_height="187dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/send_data" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.Message;
 
 import java.io.IOException;
@@ -23,13 +24,16 @@ public class BlueToothController {
     private String mName;
     private AcceptThread thread;
     private OutputStream os;
+    private BluetoothSocket socket;
+    private Handler handler;
 
-    public BlueToothController(UUID uuid, String name)
+    public BlueToothController(UUID uuid, String name, Handler hdl)
     {
         mAdapter = BluetoothAdapter.getDefaultAdapter();
         mUUID = uuid;
         mName = name;
 
+        handler = hdl;
         thread = new AcceptThread(mUUID, mName);
         thread.start();
     }
@@ -110,39 +114,60 @@ public class BlueToothController {
         return new ArrayList<>(mAdapter.getBondedDevices());
     }
 
-    public boolean isConnected = false;
+
     /**
      * 连接设备
-     * @return
+     * @return isConnected
      */
     public boolean connect(final String mac) {
+        boolean isConnected = false;
 
-        new Thread() {
-            public void Thread() {
-                if (mAdapter.isDiscovering()) {
-                    mAdapter.cancelDiscovery();
-                }
-                try {
-                    BluetoothDevice rmDevice = mAdapter.getRemoteDevice(mac);
-                    BluetoothSocket socket = rmDevice.createRfcommSocketToServiceRecord(mUUID);
-                    socket.connect();
-                    os = socket.getOutputStream();
+        if (mAdapter.isDiscovering()) {
+            mAdapter.cancelDiscovery();
+        }
+        try {
+            BluetoothDevice rmDevice = mAdapter.getRemoteDevice(mac);
+            socket = rmDevice.createRfcommSocketToServiceRecord(mUUID);
+            socket.connect();
+            os = socket.getOutputStream();
 
-                    isConnected =  true;
-                } catch (IOException e) {
-                    isConnected =  false;
-                }
-            }
-        }.start();
-
+            isConnected =  true;
+        } catch (IOException e) {
+            isConnected =  false;
+        }
         return isConnected;
 
+    }
+
+    /**
+     * 发送消息
+     * @return isSent
+     */
+    public boolean send(final String sendDat)
+    {
+        try{
+            if (socket == null) {
+                BluetoothDevice rmDevice = mAdapter.getRemoteDevice(mName);
+                socket = rmDevice.createRfcommSocketToServiceRecord(mUUID);
+                socket.connect();
+                OutputStream os = socket.getOutputStream();
+            }
+
+            //获取连接设备的输出流
+            if (os != null){
+                os.write(sendDat.getBytes("UTF-8"));
+            }
+
+            return true;
+        }catch(IOException e){
+            return false;
+        }
     }
 
     // 服务端接收信息线程类
     private class AcceptThread extends Thread {
         private BluetoothServerSocket serverSocket;
-        private BluetoothSocket socket;
+        private BluetoothSocket clientSocket;
         private InputStream is;
         private OutputStream os;
 
@@ -159,11 +184,11 @@ public class BlueToothController {
         public void run() {
             try {
                 // 接收其客户端的接口
-                socket = serverSocket.accept();
+                clientSocket = serverSocket.accept();
                 // 获取到输入流
-                is = socket.getInputStream();
+                is = clientSocket.getInputStream();
                 // 获取到输出流
-                os = socket.getOutputStream();
+                os = clientSocket.getOutputStream();
 
                 // 无线循环来接收数据
                 while (true) {
@@ -176,7 +201,7 @@ public class BlueToothController {
                     // 发送一个String的数据，让他向上转型为obj类型
                     msg.obj = new String(buffer, 0, count, "utf-8");
                     // 发送数据
-                    //handler.sendMessage(msg);
+                    handler.sendMessage(msg);
                 }
             } catch (Exception e) {
                 // TODO: handle exception

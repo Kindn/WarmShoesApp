@@ -13,10 +13,14 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -30,9 +34,21 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private List<String> mDeviceList = new ArrayList<>();
     private List<String> mBondedDeviceList = new ArrayList<>();
 
-    private final UUID myUUID = UUID.fromString("9738766b-092e-6b27-68ee-cb6f1725ed1a");
+    // 创建handler，因为我们接收是采用线程来接收的，在线程中无法操作UI，所以需要handler
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            // TODO Auto-generated method stub
+            super.handleMessage(msg);
+            TextView re_msg = (TextView) findViewById(R.id.recv_msg);
+            re_msg.setText((String)msg.obj);
+        }
+    };
+
+
+    private final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private final String name = "Bluetooth_Socket";
-    private BlueToothController mController = new BlueToothController(myUUID, name);
+    private BlueToothController mController = new BlueToothController(myUUID, name, handler);
     private ListView mListView;
     // ListView的字符串数组适配器
     private ArrayAdapter<String> arrayAdapter;
@@ -83,26 +99,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            //int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1);
-            /*
-            switch (state)
-            {
-                case BluetoothAdapter.STATE_OFF:
-                    showToast("STATE_OFF");
-                    break;
-                case BluetoothAdapter.STATE_ON:
-                    showToast("STATE_ON");
-                    break;
-                case BluetoothAdapter.STATE_TURNING_OFF:
-                    showToast("STATE_TURNING_OFF");
-                    break;
-                case BluetoothAdapter.STATE_TURNING_ON:
-                    showToast("STATE_TURNING_ON");
-                    break;
-                default:
-                    showToast("Unknown STATE");
-                    break;
-            }*/
             String action = intent.getAction();
             if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
                 showToast("开始扫描");
@@ -148,6 +144,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
         //mDeviceList = mBondedDeviceList;
         arrayAdapter.notifyDataSetChanged(); //更新
+    }
+
+    public void sendData(View view)
+    {
+        EditText msgStr = (EditText) findViewById(R.id.data_to_be_sent);
+        String dataStr = msgStr.getText().toString();
+        if (mController.send(dataStr)){
+            showToast("发送成功");
+        }
+        else{
+            showToast("发送失败");
+        }
     }
 
     private void showToast(String text)
@@ -202,5 +210,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
 
     }
+
+
 
 }
